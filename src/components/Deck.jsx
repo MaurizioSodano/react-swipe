@@ -1,26 +1,39 @@
-import React from "react";
-import {View, Animated} from "react-native";
+import React, { useRef } from "react";
+import { View, Animated, PanResponder } from "react-native";
 
-const Deck=({data,renderCard})=>{
-    const renderCards=()=>{
-        return data.map(item=>{
-const DATA = [
-  { id: 1, text: 'Card #1', uri: 'http://imgs.abduzeedo.com/files/paul0v2/unsplash/unsplash-04.jpg' },
-  { id: 2, text: 'Card #2', uri: 'http://www.fluxdigital.co/wp-content/uploads/2015/04/Unsplash.jpg' },
-  { id: 3, text: 'Card #3', uri: 'http://imgs.abduzeedo.com/files/paul0v2/unsplash/unsplash-09.jpg' },
-  { id: 4, text: 'Card #4', uri: 'http://imgs.abduzeedo.com/files/paul0v2/unsplash/unsplash-01.jpg' },
-  { id: 5, text: 'Card #5', uri: 'http://imgs.abduzeedo.com/files/paul0v2/unsplash/unsplash-04.jpg' },
-  { id: 6, text: 'Card #6', uri: 'http://www.fluxdigital.co/wp-content/uploads/2015/04/Unsplash.jpg' },
-  { id: 7, text: 'Card #7', uri: 'http://imgs.abduzeedo.com/files/paul0v2/unsplash/unsplash-09.jpg' },
-  { id: 8, text: 'Card #8', uri: 'http://imgs.abduzeedo.com/files/paul0v2/unsplash/unsplash-01.jpg' },
-];           
-            return renderCard(item);
-        })
-    }
-   
-    return <View>
-        {renderCards()}
-    </View>
-}
+const Deck = ({ data, renderCard }) => {
+    const position = useRef(new Animated.ValueXY()).current;
+
+    const panResponder = useRef(
+    PanResponder.create({
+      // Ask to be the responder:
+      onStartShouldSetPanResponder: (evt, gestureState) => true,
+      onPanResponderMove: (evt, gestureState) => {
+        // The most recent move distance is gestureState.move{X,Y}
+        // The accumulated gesture distance since becoming responder is
+        // gestureState.d{x,y}
+        position.setValue({x:gestureState.dx,y:gestureState.dy});
+      },
+
+      onPanResponderRelease: (evt, gestureState) => {
+        // The user has released all touches while this view is the
+        // responder. This typically means a gesture has succeeded
+      
+      },
+
+    })
+  ).current;
+
+  const renderCards = () => {
+    return data.map((item) => {
+      return renderCard(item);
+    });
+  };
+
+  return <Animated.View 
+        style={position.getLayout()}
+        {...panResponder.panHandlers}>{renderCards()}
+    </Animated.View>;
+};
 
 export default Deck;

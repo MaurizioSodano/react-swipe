@@ -5,7 +5,7 @@ import {Card, Button} from "react-native-elements";
 import  Deck from "./src/components/Deck";
 const DATA = [
   { id: 1, text: 'Card #1', uri: 'https://loremflickr.com/320/240/sea' },
-  { id: 2, text: 'Card #2', uri: 'https://loremflickr.com/320/240/dog' },
+  { id: 2, text: 'Card #2', uri: 'https://loremflickr.com/320/240/cat' },
   { id: 3, text: 'Card #3', uri: 'https://loremflickr.com/g/320/240/napoli' },
   { id: 4, text: 'Card #4', uri: 'https://loremflickr.com/320/240/brazil,rio' },
   { id: 5, text: 'Card #5', uri: 'https://loremflickr.com/320/240/paris,girl/all' },
@@ -16,7 +16,7 @@ const DATA = [
 export default function App() {
   
   const renderCard=(item)=>{
-    return <Card>
+    return <Card key={item.text}>
       <Card.Title>{item.text}</Card.Title>
       <Card.Image source={{uri:item.uri}}/>
       <Text style={{marginBottom:10}}> Some Text</Text>

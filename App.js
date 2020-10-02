@@ -16,7 +16,7 @@ const DATA = [
 export default function App() {
   
   const renderCard=(item)=>{
-    return <Card key={item.text}>
+    return <Card key={item.id}>
       <Card.Title>{item.text}</Card.Title>
       <Card.Image source={{uri:item.uri}}/>
       <Text style={{marginBottom:10}}> Some Text</Text>

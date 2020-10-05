@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, {useState} from 'react';
 import { StyleSheet, View,Text } from 'react-native';
 import {Card, Button} from "react-native-elements";
 import  Deck from "./src/components/Deck";
@@ -13,8 +13,14 @@ const DATA = [
   { id: 7, text: 'Card #7', uri: 'https://loremflickr.com/320/240/soccer' },
   { id: 8, text: 'Card #8', uri: 'https://loremflickr.com/320/240/basketball' },
 ];
+const DATA2 = [
+  { id: 1, text: 'Card #1', uri: 'https://loremflickr.com/320/240/moon' },
+  { id: 2, text: 'Card #2', uri: 'https://loremflickr.com/320/240/earth' },
+
+];
 export default function App() {
-  
+  const [srcImages,setSrcImages]=useState(DATA);
+
   const renderCard=(item)=>{
     return <Card key={item.id}>
       <Card.Title>{item.text}</Card.Title>
@@ -36,6 +42,7 @@ export default function App() {
         icon={{name:"code"}}
         backgroundColor="#03A9F4"
         title="Get more!"
+        onPress={setSrcImages(DATA2)}
         ></Button> 
     </Card>
   }
@@ -43,7 +50,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <Deck 
-        data={DATA}
+        data={srcImages}
         renderCard={renderCard}
         renderNoMoreCards={renderNoMoreCards}
       />

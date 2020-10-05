@@ -1,13 +1,30 @@
-import React, { useRef, useState, useEffect, isValidElement } from "react";
-import { View, Animated,StyleSheet, PanResponder, Dimensions } from "react-native";
+import React, { useRef, useState, useEffect, useLayoutEffect } from "react";
+import {
+  View,
+  Animated,
+  StyleSheet,
+  PanResponder,
+  Dimensions,
+  LayoutAnimation,
+  UIManager,
+  Platform,
+} from "react-native";
 
 const SCREEN_WIDTH = Dimensions.get(`window`).width;
 const SWIPE_THRESHOLD = 0.25 * SCREEN_WIDTH;
 const SWIPE_OUT_DURATION = 250;
-const Deck = ({ data, renderCard,renderNoMoreCards, onSwipeLeft, onSwipeRight }) => {
-  useEffect(() => {
-    // Run! Like go get some data from an API.
 
+const Deck = ({
+  data,
+  renderCard,
+  renderNoMoreCards,
+  onSwipeLeft,
+  onSwipeRight,
+}) => {
+  const [newData, setNewData] = useState(data);
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
     if (onSwipeLeft == null) {
       onSwipeLeft = () => {};
     }
@@ -15,8 +32,19 @@ const Deck = ({ data, renderCard,renderNoMoreCards, onSwipeLeft, onSwipeRight })
       onSwipeRight = () => {};
     }
   }, []);
+  useEffect(() => {
+    if (newData !== data) {
+      setNewData(data);
 
-  const [index, setIndex] = useState(0);
+      setIndex(0); //set index back to "0"
+    }
+  }, [data]);
+  useLayoutEffect(() => {
+    if (Platform.OS === "android")
+      UIManager.setLayoutAnimationEnabledExperimental &&
+        UIManager.setLayoutAnimationEnabledExperimental(true);
+    LayoutAnimation.spring();
+  }, [index]);
 
   const position = useRef(new Animated.ValueXY()).current;
 
@@ -62,12 +90,19 @@ const Deck = ({ data, renderCard,renderNoMoreCards, onSwipeLeft, onSwipeRight })
   };
 
   const onSwipeComplete = (direction) => {
-      console.log(`On swipe complete index: ${index}`)
+    console.log(`On swipe complete index: ${index}`);
     const item = data[index];
 
     direction === "right" ? onSwipeRight(item) : onSwipeLeft(item);
     position.setValue({ x: 0, y: 0 });
-    setIndex(prevIndex=>prevIndex + 1);
+    setIndex((prevIndex) => prevIndex + 1);
+    LayoutAnimation.configureNext({
+      duration: 2000,
+      update: {
+        type: LayoutAnimation.Types.spring,
+        springDamping: 0.7,
+      },
+    });
   };
   const getCardStyle = () => {
     const rotate = position.x.interpolate({
@@ -80,42 +115,50 @@ const Deck = ({ data, renderCard,renderNoMoreCards, onSwipeLeft, onSwipeRight })
     };
   };
   const renderCards = () => {
-      console.log(`Current index:${index}`)
-    if (index>=data.length) {
-        return renderNoMoreCards();
+    console.log(`Current index:${index}`);
+    if (index >= data.length) {
+      return renderNoMoreCards();
     }
-    return data.map((item, i) => {
-      if (i < index) {
-        return null;
-      }
-      if (i === index) {
+    return data
+      .map((item, i) => {
+        if (i < index) {
+          return null;
+        }
+        if (i === index) {
+          return (
+            <Animated.View
+              key={item.id}
+              style={[getCardStyle(), styles.cardStyle, { zIndex: index * -1 }]}
+              {...panResponder.panHandlers}
+            >
+              {renderCard(item)}
+            </Animated.View>
+          );
+        }
         return (
           <Animated.View
             key={item.id}
-            style={[getCardStyle(),styles.cardStyle, {zIndex: index * -1}]}
-            {...panResponder.panHandlers}
+            style={[
+              styles.cardStyle,
+              { zIndex: index * -1 },
+              { top: 10 * (i - index) },
+              { left: 10 * (i - index) },
+            ]}
           >
             {renderCard(item)}
           </Animated.View>
         );
-      }
-      return (
-          <Animated.View key={item.id } style={[styles.cardStyle, {zIndex: index * -1}]}>
-              { renderCard(item)}
-          </Animated.View>)
-         
-    }).reverse();
+      })
+      .reverse();
   };
 
   return <View>{renderCards()}</View>;
 };
 
-
 const styles = StyleSheet.create({
   cardStyle: {
-    position:"absolute",
-    width:SCREEN_WIDTH
-
+    position: "absolute",
+    width: SCREEN_WIDTH,
   },
 });
 export default Deck;

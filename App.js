@@ -8,10 +8,10 @@ const DATA = [
   { id: 2, text: 'Card #2', uri: 'https://loremflickr.com/320/240/cat' },
   { id: 3, text: 'Card #3', uri: 'https://loremflickr.com/g/320/240/napoli' },
   { id: 4, text: 'Card #4', uri: 'https://loremflickr.com/320/240/brazil,rio' },
-  { id: 5, text: 'Card #5', uri: 'https://loremflickr.com/320/240/paris,girl/all' },
-  { id: 6, text: 'Card #6', uri: 'http://www.fluxdigital.co/wp-content/uploads/2015/04/Unsplash.jpg' },
-  { id: 7, text: 'Card #7', uri: 'http://imgs.abduzeedo.com/files/paul0v2/unsplash/unsplash-09.jpg' },
-  { id: 8, text: 'Card #8', uri: 'http://imgs.abduzeedo.com/files/paul0v2/unsplash/unsplash-01.jpg' },
+  { id: 5, text: 'Card #5', uri: 'https://loremflickr.com/320/240/napoli,girl/all' },
+  { id: 6, text: 'Card #6', uri: 'https://loremflickr.com/320/240/napoli,sea' },
+  { id: 7, text: 'Card #7', uri: 'https://loremflickr.com/320/240/soccer' },
+  { id: 8, text: 'Card #8', uri: 'https://loremflickr.com/320/240/basketball' },
 ];
 export default function App() {
   
@@ -27,12 +27,25 @@ export default function App() {
         ></Button>    
     </Card>
   }
-  
+  const renderNoMoreCards=()=>{
+    return <Card>
+      <Card.Title>All Done</Card.Title>
+      
+      <Text style={{marginBottom:10}}> There's no more content here!</Text>
+      <Button 
+        icon={{name:"code"}}
+        backgroundColor="#03A9F4"
+        title="Get more!"
+        ></Button> 
+    </Card>
+  }
+
   return (
     <View style={styles.container}>
       <Deck 
         data={DATA}
         renderCard={renderCard}
+        renderNoMoreCards={renderNoMoreCards}
       />
     </View>
   );

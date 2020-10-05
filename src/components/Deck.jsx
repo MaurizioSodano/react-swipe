@@ -1,10 +1,10 @@
-import React, { useRef, useState, useEffect } from "react";
-import { View, Animated, PanResponder, Dimensions } from "react-native";
+import React, { useRef, useState, useEffect, isValidElement } from "react";
+import { View, Animated,StyleSheet, PanResponder, Dimensions } from "react-native";
 
 const SCREEN_WIDTH = Dimensions.get(`window`).width;
 const SWIPE_THRESHOLD = 0.25 * SCREEN_WIDTH;
 const SWIPE_OUT_DURATION = 250;
-const Deck = ({ data, renderCard, onSwipeLeft, onSwipeRight }) => {
+const Deck = ({ data, renderCard,renderNoMoreCards, onSwipeLeft, onSwipeRight }) => {
   useEffect(() => {
     // Run! Like go get some data from an API.
 
@@ -81,6 +81,9 @@ const Deck = ({ data, renderCard, onSwipeLeft, onSwipeRight }) => {
   };
   const renderCards = () => {
       console.log(`Current index:${index}`)
+    if (index>=data.length) {
+        return renderNoMoreCards();
+    }
     return data.map((item, i) => {
       if (i < index) {
         return null;
@@ -89,18 +92,30 @@ const Deck = ({ data, renderCard, onSwipeLeft, onSwipeRight }) => {
         return (
           <Animated.View
             key={item.id}
-            style={getCardStyle()}
+            style={[getCardStyle(),styles.cardStyle, {zIndex: index * -1}]}
             {...panResponder.panHandlers}
           >
             {renderCard(item)}
           </Animated.View>
         );
       }
-      return renderCard(item);
-    });
+      return (
+          <Animated.View key={item.id } style={[styles.cardStyle, {zIndex: index * -1}]}>
+              { renderCard(item)}
+          </Animated.View>)
+         
+    }).reverse();
   };
 
   return <View>{renderCards()}</View>;
 };
 
+
+const styles = StyleSheet.create({
+  cardStyle: {
+    position:"absolute",
+    width:SCREEN_WIDTH
+
+  },
+});
 export default Deck;
